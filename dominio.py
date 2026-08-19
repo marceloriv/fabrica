@@ -1,3 +1,5 @@
+import re
+
 DOMINIOS = {
     "python": "Desarrollo de Software",
     "marketing": "Marketing Digital",
@@ -29,7 +31,7 @@ def detectar_dominio(solicitud: str) -> str:
     solicitud_lower = solicitud.lower()
     
     palabras_clave = {
-        "python": ["python", "código", "programar", "desarrollo", "software", "api"],
+        "python": ["python", "código", "programar", "desarrollo", "software", "api", "ponytail", "react", "typescript", "javascript", "node", "sql", "frontend", "backend"],
         "marketing": ["marketing", "publicidad", "campaña", "branding", "seo", "social media"],
         "ventas": ["ventas", "vender", "clientes", "negociación", "prospectos", "cierre"],
         "educacion": ["educación", "enseñar", "aprender", "curso", "formación", "capacitación"],
@@ -55,7 +57,10 @@ def detectar_dominio(solicitud: str) -> str:
     dominio_detectado = "general"
     
     for dominio, palabras in palabras_clave.items():
-        coincidencias = sum(1 for palabra in palabras if palabra in solicitud_lower)
+        coincidencias = sum(
+            1 for palabra in palabras
+            if re.search(rf"\b{re.escape(palabra)}\b", solicitud_lower)
+        )
         if coincidencias > max_coincidencias:
             max_coincidencias = coincidencias
             dominio_detectado = dominio
