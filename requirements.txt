@@ -1,3 +1,10 @@
 crewai[google-genai]==1.15.16
+crewai-tools==1.15.16
+lxml==6.1.1
 python-dotenv==1.2.3
 pytest==9.1.1
+fastapi==0.141.1
+uvicorn==0.52.3
+python-multipart==0.0.32
+jinja2==3.1.6
+httpx==0.28.1
