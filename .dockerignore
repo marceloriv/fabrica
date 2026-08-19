@@ -1,0 +1,29 @@
+# Secretos: nunca deben llegar a la imagen, se inyectan en runtime vía env_file/environment.
+.env
+*.env
+!.env.example
+
+# Control de versiones y tooling — mismo criterio que .gitignore, más carpetas de agentes/índices.
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.codegraph
+.claude
+.agents
+.vscode
+
+# Tests y docs: no se ejecutan ni se sirven desde la imagen.
+tests/
+test_fabrica.py
+*.md
+
+# Metadata de tooling local, no relevante para el runtime.
+skills-lock.json
+
+# Artefactos de Docker: no copiarse a sí mismos.
+Dockerfile
+docker-compose.yml
+.dockerignore

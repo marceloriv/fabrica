@@ -1,0 +1,26 @@
+# Un solo servicio real: CLI y web son dos entry points del mismo paquete fabrica_prompts/,
+# no microservicios. Sin DB, sin tiers -> no se fuerzan redes aisladas ni volúmenes.
+services:
+  fabrica-prompts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fabrica-prompts:latest
+    # Credenciales (GEMINI_API_KEY, etc.) fuera de git: .env se lee en runtime,
+    # nunca se copia a la imagen (ver .dockerignore). Crear .env desde .env.example.
+    env_file:
+      - .env
+    ports:
+      # web.py no tiene auth (por diseño, uso local) -> bind solo a loopback.
+      # Cambiar a "8000:8000" únicamente si hay un proxy propio con auth/TLS delante.
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/', timeout=3).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+# CLI puntual (modo interactivo sin argumento no sirve sin TTY dentro de compose):
+#   docker compose run --rm fabrica-prompts python -m fabrica_prompts.cli "tu solicitud de prompt"

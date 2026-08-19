@@ -13,6 +13,35 @@ py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
+## Estructura
+
+```
+fabrica_prompts/     # paquete: cli.py, web.py (entradas), crew.py (agentes/tasks), dominio.py, tools.py
+tests/                # test_dominio.py, test_crew.py, test_web.py, test_tools.py
+```
+
+## Ejecución
+
+CLI (una solicitud por vez, o interactivo si no pasás argumento):
+
+```bash
+.venv\Scripts\python.exe -m fabrica_prompts.cli "tu solicitud de prompt"
+```
+
+Interfaz web local (formulario simple en el navegador):
+
+```bash
+.venv\Scripts\python.exe -m uvicorn fabrica_prompts.web:app --reload
+```
+
+Abrí http://127.0.0.1:8000 en el navegador. Sin auth, pensada para uso local en tu máquina.
+
+Tests:
+
+```bash
+.venv\Scripts\python.exe -m pytest -q
+```
+
 ## Configuración de Variables de Entorno
 
 Para ejecutar el proyecto, debes crear un archivo llamado `.env` en la raíz del proyecto y copiar los contenidos de [.env.example](file:///c:/Users/Marcelo-HP/Desktop/Codigo/Proyectos/fabrica/.env.example) para completarlos con tus credenciales.
