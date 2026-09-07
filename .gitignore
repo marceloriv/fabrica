@@ -3,3 +3,6 @@
 /.agents
 .vscode
 .venv
+.claude
+.codegraph
+skills-lock.json
