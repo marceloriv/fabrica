@@ -1,7 +1,6 @@
-import time
+import json
 from unittest.mock import MagicMock
 
-import pytest
 from fastapi.testclient import TestClient
 import fabrica_prompts.web as web
 
@@ -13,71 +12,63 @@ def test_index_muestra_el_formulario():
     assert resp.status_code == 200
     assert "<form" in resp.text
     assert "solicitud" in resp.text
+    assert "btn-cancelar" in resp.text
 
 
-def test_generar_rechaza_solicitud_corta_sin_llamar_a_la_crew(monkeypatch):
+def test_generar_rechaza_solicitud_corta(monkeypatch):
     llamada = MagicMock()
     monkeypatch.setattr(web, "build_llm", llamada)
 
     resp = client.post("/generar", json={"solicitud": "  "})
 
-    assert resp.status_code == 200
-    assert "al menos 3" in resp.json()["error"]
+    assert resp.status_code == 400
+    assert "al menos 3" in resp.json()["detail"]
     llamada.assert_not_called()
 
 
-def test_ejecutar_job_guarda_resultado_en_jobs(monkeypatch):
+def test_generar_stream_emite_progreso_y_resultado(monkeypatch):
+    def mock_build_crew(dominio_nombre, llm, task_callback=None):
+        if task_callback:
+            task_callback(MagicMock())
+        return MagicMock()
+
     monkeypatch.setattr(web, "build_llm", MagicMock())
-    monkeypatch.setattr(web, "build_crew", MagicMock())
+    monkeypatch.setattr(web, "build_crew", mock_build_crew)
     monkeypatch.setattr(
-        web, "ejecutar_con_reintento", MagicMock(return_value="Actúa como una prueba")
+        web, "ejecutar_con_reintento", MagicMock(return_value="Actúa como un experto")
     )
 
-    web._JOBS["job-test"] = {"paso": 0, "total": 4, "listo": False, "error": None, "resultado": None}
-    web._ejecutar_job("job-test", "una solicitud de prueba con python")
+    resp = client.post("/generar", json={"solicitud": "solicitud con python"})
+    assert resp.status_code == 200
+    assert "text/event-stream" in resp.headers["content-type"]
 
-    job = web._JOBS["job-test"]
-    assert job["listo"] is True
-    assert job["error"] is None
-    assert job["resultado"]["texto"] == "Actúa como una prueba"
-    assert job["resultado"]["dominio_codigo"] == "python"
+    eventos = [
+        json.loads(linea[5:].strip())
+        for linea in resp.text.strip().split("\n\n")
+        if linea.startswith("data:")
+    ]
+
+    tipos = [e["tipo"] for e in eventos]
+    assert "progreso" in tipos
+    assert "resultado" in tipos
+
+    resultado = next(e for e in eventos if e["tipo"] == "resultado")
+    assert resultado["texto"] == "Actúa como un experto"
+    assert resultado["dominio_codigo"] == "python"
 
 
-def test_ejecutar_job_guarda_error_de_configuracion(monkeypatch):
+def test_generar_stream_emite_error_de_configuracion(monkeypatch):
     monkeypatch.setattr(web, "build_llm", MagicMock(side_effect=ValueError("sin key")))
 
-    web._JOBS["job-err"] = {"paso": 0, "total": 4, "listo": False, "error": None, "resultado": None}
-    web._ejecutar_job("job-err", "otra solicitud")
-
-    job = web._JOBS["job-err"]
-    assert job["listo"] is True
-    assert "sin key" in job["error"]
-
-
-def test_generar_arranca_job_y_estado_lo_expone(monkeypatch):
-    monkeypatch.setattr(web, "build_llm", MagicMock())
-    monkeypatch.setattr(web, "build_crew", MagicMock())
-    monkeypatch.setattr(
-        web, "ejecutar_con_reintento", MagicMock(return_value="Actúa como otra prueba")
-    )
-
-    resp = client.post("/generar", json={"solicitud": "necesito un prompt de prueba"})
+    resp = client.post("/generar", json={"solicitud": "solicitud valida"})
     assert resp.status_code == 200
-    job_id = resp.json()["job_id"]
 
-    for _ in range(50):
-        estado = client.get(f"/estado/{job_id}").json()
-        if estado["listo"]:
-            break
-        time.sleep(0.05)
-    else:
-        pytest.fail("el job no terminó a tiempo")
+    eventos = [
+        json.loads(linea[5:].strip())
+        for linea in resp.text.strip().split("\n\n")
+        if linea.startswith("data:")
+    ]
 
-    assert estado["error"] is None
-    assert estado["resultado"]["texto"] == "Actúa como otra prueba"
-
-
-def test_estado_job_inexistente_devuelve_error():
-    resp = client.get("/estado/no-existe")
-    assert resp.status_code == 200
-    assert "error" in resp.json()
+    assert len(eventos) == 1
+    assert eventos[0]["tipo"] == "error"
+    assert "sin key" in eventos[0]["mensaje"]
