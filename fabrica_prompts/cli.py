@@ -23,12 +23,6 @@ from .tools import parece_instruccion
 COMANDOS_SALIDA = {"salir", "exit", "quit"}
 
 
-def _separador() -> None:
-    print()
-    print("-" * 70)
-    print()
-
-
 def procesar_solicitud(solicitud: str) -> None:
     """Corre la crew para una solicitud y muestra el resultado (o el error)."""
     print()
@@ -49,7 +43,7 @@ def procesar_solicitud(solicitud: str) -> None:
         crew = build_crew(dominio_nombre, llm)
         resultado = ejecutar_con_reintento(crew, {"solicitud": solicitud})
 
-        _separador()
+        print(f"\n{'-' * 70}\n")
         if not str(resultado).strip():
             print("⚠️ La crew terminó sin generar un prompt final (salida vacía)")
         else:
@@ -70,7 +64,7 @@ def procesar_solicitud(solicitud: str) -> None:
                 print(uso)
 
     except ValueError as e:
-        _separador()
+        print(f"\n{'-' * 70}\n")
         print(f"❌ Error de configuración: {str(e)}")
         print()
         print("Por favor, configura las variables de entorno:")
@@ -82,7 +76,7 @@ def procesar_solicitud(solicitud: str) -> None:
         print(f"    export MODEL={DEFAULT_MODEL}")
 
     except Exception as e:
-        _separador()
+        print(f"\n{'-' * 70}\n")
         print(f"❌ Error durante el proceso: {str(e)}")
         import traceback
 

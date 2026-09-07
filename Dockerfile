@@ -11,7 +11,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
-# crewai/lxml publican wheels manylinux para cp312 amd64 -> sin build-essential.
+# crewai publica wheels manylinux para cp312 amd64 -> sin build-essential.
 # Si el build falla por falta de wheel en tu arch, agregar aquí:
 #   apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir --upgrade pip \

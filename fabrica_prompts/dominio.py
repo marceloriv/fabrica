@@ -24,14 +24,8 @@ DOMINIOS = {
 }
 
 
-def detectar_dominio(solicitud: str) -> str:
-    """
-    Detecta el dominio más probable basado en palabras clave en la solicitud.
-    """
-    solicitud_lower = solicitud.lower()
-
-    palabras_clave = {
-        "python": [
+PALABRAS_CLAVE = {
+    "python": [
             "python",
             "código",
             "programar",
@@ -39,6 +33,8 @@ def detectar_dominio(solicitud: str) -> str:
             "software",
             "api",
             "ponytail",
+            "audit",
+            "opencode",
             "react",
             "typescript",
             "javascript",
@@ -170,17 +166,23 @@ def detectar_dominio(solicitud: str) -> str:
             "hallazgos",
             "conclusión",
         ],
-    }
+}
+_PATRONES_DOMINIO = {
+    dominio: re.compile(
+        r"\b(" + "|".join(re.escape(p) for p in sorted(palabras, key=len, reverse=True)) + r")\b"
+    )
+    for dominio, palabras in PALABRAS_CLAVE.items()
+}
 
+
+def detectar_dominio(solicitud: str) -> str:
+    """Detecta el dominio más probable basado en palabras clave en la solicitud."""
+    texto = solicitud.lower()
     max_coincidencias = 0
     dominio_detectado = "general"
 
-    for dominio, palabras in palabras_clave.items():
-        coincidencias = sum(
-            1
-            for palabra in palabras
-            if re.search(rf"\b{re.escape(palabra)}\b", solicitud_lower)
-        )
+    for dominio, patron in _PATRONES_DOMINIO.items():
+        coincidencias = len(set(patron.findall(texto)))
         if coincidencias > max_coincidencias:
             max_coincidencias = coincidencias
             dominio_detectado = dominio

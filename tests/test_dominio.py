@@ -9,6 +9,8 @@ def test_detectar_dominio():
         detectar_dominio("Cómo optimizar despliegues con Docker y Kubernetes")
         == "devops"
     )
+    assert detectar_dominio("hacer un audit de rendimiento") == "python"
+    assert detectar_dominio("usar la herramienta opencode") == "python"
     assert detectar_dominio("hola mundo") == "general"
 
 
