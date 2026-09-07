@@ -14,26 +14,28 @@ Guía técnica centralizada para agentes y desarrolladores que trabajan en este 
 
 ```bash
 py -3.12 -m venv .venv
-.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 ### Ejecución
 
+*(Nota: si el entorno ya está activado o usas Python global, puedes reemplazar `.\.venv\Scripts\python.exe` simplemente por `python` en los comandos siguientes)*
+
 - **CLI puntual**:
   ```bash
-  .venv\Scripts\python.exe -m fabrica_prompts.cli "tu solicitud de prompt"
+  .\.venv\Scripts\python.exe -m fabrica_prompts.cli "tu solicitud de prompt"
   ```
 - **CLI interactivo**:
   ```bash
-  .venv\Scripts\python.exe -m fabrica_prompts.cli
+  .\.venv\Scripts\python.exe -m fabrica_prompts.cli
   ```
 - **Interfaz Web local (FastAPI con SSE streaming)**:
   ```bash
-  .venv\Scripts\python.exe -m uvicorn fabrica_prompts.web:app --reload
+  .\.venv\Scripts\python.exe -m uvicorn fabrica_prompts.web:app --reload
   ```
 - **Pruebas unitarias**:
   ```bash
-  .venv\Scripts\python.exe -m pytest -v
+  .\.venv\Scripts\python.exe -m pytest -v
   ```
 
 ### Variables de Entorno (`.env`)

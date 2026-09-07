@@ -22,7 +22,12 @@ El flujo de procesamiento opera en cascada acumulativa:
 
 ```bash
 py -3.12 -m venv .venv
-.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+*(Alternativa)* Si tienes el entorno activado o usas Python global:
+```bash
+python -m pip install -r requirements.txt
 ```
 
 ### Variables de Entorno
@@ -48,11 +53,13 @@ Punto de entrada: `fabrica_prompts.cli`
 
 ```bash
 # Modo de ejecucion directa (un solo paso)
-.venv\Scripts\python.exe -m fabrica_prompts.cli "<solicitud>"
+.\.venv\Scripts\python.exe -m fabrica_prompts.cli "<solicitud>"
 
 # Modo interactivo continuo
-.venv\Scripts\python.exe -m fabrica_prompts.cli
+.\.venv\Scripts\python.exe -m fabrica_prompts.cli
 ```
+
+*(Alternativa)* Con entorno activado: `python -m fabrica_prompts.cli "<solicitud>"`
 
 Comandos de salida interactiva: `salir`, `exit`, `quit` o linea vacia.
 
@@ -60,8 +67,10 @@ Comandos de salida interactiva: `salir`, `exit`, `quit` o linea vacia.
 Punto de entrada: `fabrica_prompts.web:app`
 
 ```bash
-.venv\Scripts\python.exe -m uvicorn fabrica_prompts.web:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn fabrica_prompts.web:app --host 127.0.0.1 --port 8000
 ```
+
+*(Alternativa)* Con entorno activado: `python -m uvicorn fabrica_prompts.web:app --host 127.0.0.1 --port 8000`
 
 - **`GET /`**: Retorna `solicitud.html` (`FileResponse`, media type `text/html`).
 - **`POST /generar`**:
@@ -90,7 +99,7 @@ docker compose run --rm fabrica-prompts python -m fabrica_prompts.cli "<solicitu
 ### Ejecucion via CLI
 
 ```bash
-.venv\Scripts\python.exe -m fabrica_prompts.cli "Necesito un prompt para analizar logs de errores en Python con FastAPI"
+.\.venv\Scripts\python.exe -m fabrica_prompts.cli "Necesito un prompt para analizar logs de errores en Python con FastAPI"
 ```
 
 Salida esperada en consola:
@@ -144,7 +153,7 @@ data: {"tipo": "resultado", "dominio_nombre": "Ciberseguridad", "dominio_codigo"
 ### Ejecucion de Pruebas Automatizadas
 
 ```bash
-.venv\Scripts\python.exe -m pytest tests/test_dominio.py tests/test_tools.py tests/test_web.py -v
+.\.venv\Scripts\python.exe -m pytest tests/test_dominio.py tests/test_tools.py tests/test_web.py -v
 ```
 
 ---
