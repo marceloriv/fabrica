@@ -226,9 +226,9 @@ def build_crew(dominio_nombre: str, llm: LLM, task_callback=None) -> Crew:
             "los riesgos/recomendaciones del Especialista como insumo para esas sub-directivas."
         ),
         expected_output=(
-            "Un PROMPT: texto en forma de instrucción dirigida a una IA ejecutora (empieza con algo como "
-            "'Actúa como...' o equivalente), nunca la respuesta ya desarrollada dirigida al usuario final. "
-            "Sin explicaciones ni comentarios meta."
+            "El prompt optimizado o contenido directo según el 'Tipo de entrega' definido por el Analista: "
+            "si es conversacional, una instrucción dirigida a una IA ('Actúa como...'); si es contenido directo, "
+            "el texto final listo para usar en la herramienta de destino. Sin explicaciones ni comentarios meta."
         ),
         agent=arquitecto,
         context=[tarea_analisis, tarea_especialidad],
